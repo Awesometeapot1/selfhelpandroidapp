@@ -1,33 +1,6 @@
----
 ```markdown
-# Self Help Android App
-
-A simple interactive self-help and reflection app inspired by a **Choose Your Own Adventure** storytelling system originally built on a **Raspberry Pi Pico**.
-
-The goal of this project is to explore how interactive storytelling can be used to support **emotional reflection, grounding, and daily mental check-ins**.
-
-Instead of presenting advice directly, the app guides the user through a narrative world where choices lead to different paths, encouraging reflection and exploration.
-
-
 ---
 ---
-## Concept
-
-The core idea is a **Choose Your Own Adventure style reflection system**.
-
-Users navigate a story world and make decisions that guide them through different emotional states and scenarios.
-
-Example structure:
-```
-
-Start
-│
-├─ Sunny day → calm exploration
-├─ Cloudy day → low mood reflection
-├─ Rainy day → sadness support
-└─ Windy day → anxiety grounding
-
----```
 
 Each path leads to locations in the story world such as:
 
