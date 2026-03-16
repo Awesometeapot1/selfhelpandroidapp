@@ -1,4 +1,4 @@
-
+---
 ```markdown
 # Self Help Android App
 
@@ -18,7 +18,6 @@ The core idea is a **Choose Your Own Adventure style reflection system**.
 Users navigate a story world and make decisions that guide them through different emotional states and scenarios.
 
 Example structure:
----
 ```
 
 Start
