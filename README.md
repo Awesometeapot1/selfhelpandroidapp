@@ -10,7 +10,7 @@ Instead of presenting advice directly, the app guides the user through a narrati
 
 
 ---
-
+---
 ## Concept
 
 The core idea is a **Choose Your Own Adventure style reflection system**.
@@ -18,7 +18,7 @@ The core idea is a **Choose Your Own Adventure style reflection system**.
 Users navigate a story world and make decisions that guide them through different emotional states and scenarios.
 
 Example structure:
-
+---
 ```
 
 Start
@@ -28,7 +28,7 @@ Start
 ├─ Rainy day → sadness support
 └─ Windy day → anxiety grounding
 
-```
+---```
 
 Each path leads to locations in the story world such as:
 
@@ -38,7 +38,7 @@ Each path leads to locations in the story world such as:
 - Story characters
 
 ---
-
+---
 ## Example Story World
 
 The current narrative setting includes locations such as:
@@ -51,7 +51,7 @@ The current narrative setting includes locations such as:
 These areas allow the user to explore thoughts and emotions through narrative choices.
 
 ---
-
+---
 ## Project Goals
 
 The main goals of this project are:
@@ -62,7 +62,7 @@ The main goals of this project are:
 - Create a simple and accessible reflection tool
 
 This is currently an experimental personal project.
-
+---
 ---
 
 ## Technologies
@@ -80,7 +80,7 @@ The original prototype used:
 - MicroPython
 - Touchscreen interface
 - Custom story data system
-
+---
 ---
 
 ## Future Ideas
@@ -93,18 +93,16 @@ Planned improvements include:
 - Calm UI themes
 - Audio narration
 - Optional grounding exercises
-
+---
 ---
 
 ## Author
 
 GitHub: https://github.com/Awesometeapot1
-
+---
 ---
 
 ## License
 
 This project is licensed under the GPL-2.0 License.
 ```
-
--- or job applications**.
