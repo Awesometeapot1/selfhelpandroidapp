@@ -1,0 +1,466 @@
+{
+  "start": {
+    "text": "You arrive at the edge of a quiet field.\ngrass sprouts from the ground like ribbons.\n\nBefore you go further, you stop.\nWhat kind of day is it?\n\nQuick access:\nHare’s Burrow has three Memory Rooms (Green/Amber/Red).",
+    "choices": [
+      { "text": "Sunny day (steady/okay)", "next": "map_sunny" },
+      { "text": "Cloudy day (low/heavy)", "next": "map_cloudy" },
+      { "text": "Rainy day (sad/tearful)", "next": "map_rainy" },
+      { "text": "Windy day (anxious/restless)", "next": "map_windy" },
+      { "text": "Daily Check-In", "next": "checkin_intro" },
+      { "text": "Quick Access: Memory Rooms (Hare’s Burrow)", "next": "burrow_hare" }
+    ]
+  },
+
+  "map_sunny": {
+    "text": "MAP — SUNNY DAY\n\nSunlight shines softly onto you.\nThe sky is a deep blue. Existing isnt hard.\n\nWhere do you go?",
+    "choices": [
+      { "text": "North: Deer Path (panic tools)", "next": "deer_intro" },
+      { "text": "East: River (Otter / soothing)", "next": "otter_intro" },
+      { "text": "South: Hedge (Hedgehog / shutdown)", "next": "hedgehog_intro" },
+      { "text": "West: Stones (Badger / boundaries)", "next": "badger_intro" },
+      { "text": "Center: Big Tree (Rabbit, Hare, Robin, fox, owl)", "next": "tree_hub" },
+      { "text": "Daily Check-In", "next": "checkin_intro" },
+      { "text": "Memory Rooms (Hare’s Burrow)", "next": "burrow_hare" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "map_cloudy": {
+    "text": "MAP — CLOUDY DAY\n\nits darker now.\nthe slow drawl of time sits with you.\n\nWhere do you go?",
+    "choices": [
+      { "text": "North: Deer Path (panic tools)", "next": "deer_intro" },
+      { "text": "East: River (Otter / soothing)", "next": "otter_intro" },
+      { "text": "South: Hedge (Hedgehog / shutdown)", "next": "hedgehog_intro" },
+      { "text": "West: Stones (Badger / boundaries)", "next": "badger_intro" },
+      { "text": "Center: Big Tree (Rabbit, Hare, Robin, fox, owl)", "next": "tree_hub" },
+      { "text": "Daily Check-In", "next": "checkin_intro" },
+      { "text": "Memory Rooms (Hare’s Burrow)", "next": "burrow_hare" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "map_rainy": {
+    "text": "MAP — RAINY DAY\n\nRain sprinkles from the sky .\nThe grass is cool, and you feel a pain in your chest.\n\nWhere do you go?",
+    "choices": [
+      { "text": "North: Deer Path (panic tools)", "next": "deer_intro" },
+      { "text": "East: River (Otter / soothing)", "next": "otter_intro" },
+      { "text": "South: Hedge (Hedgehog / shutdown)", "next": "hedgehog_intro" },
+      { "text": "West: Stones (Badger / boundaries)", "next": "badger_intro" },
+      { "text": "Center: Big Tree (Rabbit, Hare, Robin, fox, owl)", "next": "tree_hub" },
+      { "text": "Daily Check-In", "next": "checkin_intro" },
+      { "text": "Memory Rooms (Hare’s Burrow)", "next": "burrow_hare" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "map_windy": {
+    "text": "MAP — WINDY DAY\n\nWind whispers its cool breath.\nYour thoughts keep moving, not able to stop.\n\nWhere do you go?",
+    "choices": [
+      { "text": "North: Deer Path (panic tools)", "next": "deer_intro" },
+      { "text": "East: River (Otter / soothing)", "next": "otter_intro" },
+      { "text": "South: Hedge (Hedgehog / shutdown)", "next": "hedgehog_intro" },
+      { "text": "West: Stones (Badger / boundaries)", "next": "badger_intro" },
+      { "text": "Center: Big Tree (Rabbit, Hare, Robin, fox, owl)", "next": "tree_hub" },
+      { "text": "Daily Check-In", "next": "checkin_intro" },
+      { "text": "Memory Rooms (Hare’s Burrow)", "next": "burrow_hare" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "tree_hub": {
+    "text": "CENTER — THE BIG TREE\n\nRabbit sits with calm attention.\nHare looks like it’s halfway into tomorrow.\nA robin watches you with gentle care.\n\na fox trail nearby.\n\nan owl snoozes on a branch.\n\nWho do you go to?",
+    "choices": [
+      { "text": "Rabbit (feelings + compassion)", "next": "rabbit_intro" },
+      { "text": "Hare (overthinking + next step)", "next": "hare_intro" },
+      { "text": "Robin (support)", "next": "robin_intro" },
+      { "text": "Fox (inner critic)", "next": "fox_intro" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "burrow_hare": {
+    "text": "HARE’S BURROW\n\nYou duck into a quiet burrow.\nThe air is calm and still.\n\nThree doors stand in a row:\nGREEN • AMBER • RED\n\nHare whispers:\n“These are Memory Rooms. Quick to reach when you need them.”",
+    "choices": [
+      { "text": "Green Room (steady)", "next": "memory_green" },
+      { "text": "Amber Room (early warning)", "next": "memory_amber" },
+      { "text": "Red Room (urgent)", "next": "memory_red" },
+      { "text": "Back to Start", "next": "start" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "memory_green": {
+    "text": "MEMORY ROOM — GREEN\nSigns you’re doing okay / staying steady.\n\nGREEN SIGNS (examples):\n- Sleeping roughly as normal\n- Eating/drinking enough\n- Able to focus sometimes\n- Stress feels manageable\n- You can reality-check worries\n\nKEEP IT STEADY (small actions):\n- Keep a routine (sleep/wake)\n- Eat something simple + drink water\n- Take breaks from scrolling\n- Gentle movement (stretch/walk)\n- Stay connected to 1 person\n\nIf you notice things shifting, step into AMBER early.",
+    "choices": [
+      { "text": "Go to Amber Room", "next": "memory_amber" },
+      { "text": "Back to Burrow", "next": "burrow_hare" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "memory_amber": {
+    "text": "MEMORY ROOM — AMBER\nEarly warning signs (slow down + get support).\n\nAMBER SIGNS (examples):\n- Sleep changing (less, broken, very restless)\n- Feeling unusually anxious, wired, overwhelmed\n- Finding meanings/patterns everywhere (more than usual)\n- Feeling suspicious or on-guard\n- Hearing/seeing things at the edge of perception\n- Thoughts racing or hard to organise\n- Withdrawing from people / feeling disconnected\n\nAMBER PLAN (do these now):\n1) Reduce stress + stimulation (quiet room, dim lights)\n2) Prioritise sleep (wind-down, no caffeine late)\n3) Eat + drink something\n4) Talk to someone you trust today\n5) Contact your GP / mental health team if you have one\n\nIf you feel unsafe or things escalate, step into RED.",
+    "choices": [
+      { "text": "Go to Red Room", "next": "memory_red" },
+      { "text": "Back to Green Room", "next": "memory_green" },
+      { "text": "Back to Burrow", "next": "burrow_hare" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "memory_red": {
+    "text": "MEMORY ROOM — RED\nUrgent signs (get help now).\n\nRED SIGNS (examples):\n- Feeling out of control or unable to keep yourself safe\n- Strong beliefs others say aren’t real, and you can’t reality-check\n- Hearing/seeing things that feel very real and distressing\n- Severe agitation or fear\n- Not sleeping for a long time + symptoms intensifying\n\nDO THIS NOW:\n1) Don’t stay alone if possible — contact someone you trust\n2) If you have a crisis line / mental health team, call them\n3) If there’s immediate danger, call emergency services\n\nUK QUICK INFO:\n- Immediate danger: call 999\n- Urgent but not life-threatening: NHS 111\n\nYou deserve support. This is a ‘get help’ moment.",
+    "choices": [
+      { "text": "Back to Amber Room", "next": "memory_amber" },
+      { "text": "Back to Burrow", "next": "burrow_hare" },
+      { "text": "Back to Start", "next": "start" }
+    ]
+  },
+
+  "checkin_intro": {
+    "text": "DAILY CHECK-IN\n\nNo judgement. Just noticing.\n\nHow is your mood right now?",
+    "choices": [
+      { "text": "Good / okay", "next": "checkin_mood_ok" },
+      { "text": "Low / heavy", "next": "checkin_mood_low" },
+      { "text": "Anxious / on edge", "next": "checkin_mood_anx" },
+      { "text": "Numb / disconnected", "next": "checkin_mood_numb" }
+    ]
+  },
+
+  "checkin_mood_ok": {
+    "text": "Mood: good / okay.\n\nHow’s your energy?",
+    "choices": [
+      { "text": "High", "next": "checkin_energy_high" },
+      { "text": "Medium", "next": "checkin_energy_mid" },
+      { "text": "Low", "next": "checkin_energy_low" }
+    ]
+  },
+
+  "checkin_mood_low": {
+    "text": "Mood: low / heavy.\n\nThat makes sense.\nHow’s your energy?",
+    "choices": [
+      { "text": "High", "next": "checkin_energy_high" },
+      { "text": "Medium", "next": "checkin_energy_mid" },
+      { "text": "Low", "next": "checkin_energy_low" }
+    ]
+  },
+
+  "checkin_mood_anx": {
+    "text": "Mood: anxious / on edge.\n\nYour body is trying to protect you.\nHow’s your energy?",
+    "choices": [
+      { "text": "High", "next": "checkin_energy_high" },
+      { "text": "Medium", "next": "checkin_energy_mid" },
+      { "text": "Low", "next": "checkin_energy_low" }
+    ]
+  },
+
+  "checkin_mood_numb": {
+    "text": "Mood: numb / disconnected.\n\nSometimes numb is coping.\nHow’s your energy?",
+    "choices": [
+      { "text": "High", "next": "checkin_energy_high" },
+      { "text": "Medium", "next": "checkin_energy_mid" },
+      { "text": "Low", "next": "checkin_energy_low" }
+    ]
+  },
+
+  "checkin_energy_high": {
+    "text": "Energy: high.\n\nWhat do you need most?",
+    "choices": [
+      { "text": "Calm", "next": "checkin_need_calm" },
+      { "text": "Focus", "next": "checkin_need_focus" },
+      { "text": "Connection", "next": "checkin_need_connect" },
+      { "text": "Joy", "next": "checkin_need_joy" }
+    ]
+  },
+
+  "checkin_energy_mid": {
+    "text": "Energy: medium.\n\nWhat do you need most?",
+    "choices": [
+      { "text": "Calm", "next": "checkin_need_calm" },
+      { "text": "Focus", "next": "checkin_need_focus" },
+      { "text": "Connection", "next": "checkin_need_connect" },
+      { "text": "Joy", "next": "checkin_need_joy" }
+    ]
+  },
+
+  "checkin_energy_low": {
+    "text": "Energy: low.\n\nLet’s keep it gentle.\nWhat do you need most?",
+    "choices": [
+      { "text": "Rest", "next": "checkin_need_rest" },
+      { "text": "Calm", "next": "checkin_need_calm" },
+      { "text": "Connection", "next": "checkin_need_connect" },
+      { "text": "Tiny task", "next": "checkin_need_tiny" }
+    ]
+  },
+
+  "checkin_need_calm": {
+    "text": "Need: calm.\n\nPick one:\n- Box breathing\n- 5–4–3–2–1 grounding\n- Panic tools (Deer)",
+    "choices": [
+      { "text": "Box breathing", "next": "breathing_box" },
+      { "text": "5–4–3–2–1 grounding", "next": "grounding_54321" },
+      { "text": "Visit Deer (panic tools)", "next": "deer_intro" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "checkin_need_focus": {
+    "text": "Need: focus.\n\nTry: 2 minutes only.\nPick ONE tiny step.\nStop after 2 minutes if you want.\n\nProgress counts when it’s small.",
+    "choices": [
+      { "text": "Visit Hare (next step)", "next": "hare_next_step" },
+      { "text": "Visit Badger (boundaries)", "next": "badger_intro" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "checkin_need_connect": {
+    "text": "Need: connection.\n\nPick ONE:\n- Message someone\n- Sit near someone\n- Hold something soft\n\nConnection can be quiet.",
+    "choices": [
+      { "text": "Visit Robin (support)", "next": "robin_intro" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "checkin_need_joy": {
+    "text": "Need: joy.\n\nTiny joy counts.\n- warm drink\n- favourite song\n- step into sunlight",
+    "choices": [
+      { "text": "Visit Otter (joy)", "next": "otter_intro" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "checkin_need_rest": {
+    "text": "Need: rest.\n\nPermission slip:\n“Rest is allowed.”\n\nOne gentle reset:\n- water\n- wash face\n- lie down 10 mins",
+    "choices": [
+      { "text": "Visit Hedgehog (shutdown)", "next": "hedgehog_intro" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "checkin_need_tiny": {
+    "text": "Need: tiny task.\n\nPick one micro-step:\n- open a window\n- put one thing away\n- stretch\n\nSmall wins are real.",
+    "choices": [
+      { "text": "Visit Hare (next step)", "next": "hare_next_step" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "rabbit_intro": {
+    "text": "RABBIT\n\n“Feelings are like weather,” Rabbit says.\n“They change. They pass through.”\n\nWhat would help?",
+    "choices": [
+      { "text": "Name the feeling", "next": "rabbit_name" },
+      { "text": "Self-compassion sentence", "next": "rabbit_compassion" },
+      { "text": "Grounding 5–4–3–2–1", "next": "grounding_54321" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "rabbit_name": {
+    "text": "Pick a word that fits even a little:\nsad • anxious • angry • tired • lonely • overwhelmed\n\nNow add:\n“...and that makes sense.”\n\nNaming it can soften it.",
+    "choices": [
+      { "text": "Self-compassion", "next": "rabbit_compassion" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "rabbit_compassion": {
+    "text": "Try one kind sentence:\n\n- “This is hard, and I’m doing my best.”\n- “One step at a time.”\n- “I can be imperfect and still worthy.”\n\nTHE END (skill learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "hare_intro": {
+    "text": "HARE\n\n“My brain runs ahead,” Hare admits.\n“It tries to protect me with worries.”\n\nPick a tool:",
+    "choices": [
+      { "text": "Thoughts aren’t facts", "next": "hare_thoughts" },
+      { "text": "Pick one next step", "next": "hare_next_step" },
+      { "text": "Box breathing", "next": "breathing_box" },
+      { "text": "Memory Rooms (Burrow)", "next": "burrow_hare" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "hare_thoughts": {
+    "text": "Say:\n“I’m having lots of difficult thoughts.”\n\nIt creates space.\nYou can notice thoughts without obeying them.\n\nTHE END (skill learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "hare_next_step": {
+    "text": "Pick ONE small next step today.\n\nNot the whole mountain.\nJust one stone.\n\nTHE END (skill learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "robin_intro": {
+    "text": "ROBIN\n\nThe robin feels like care you can trust.\nLike your mum noticing you’re not okay.\n\n“You don’t have to carry this alone.”",
+    "choices": [
+      { "text": "Comfort words", "next": "robin_comfort" },
+      { "text": "Make a small support plan", "next": "robin_plan" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "robin_comfort": {
+    "text": "Comfort words:\n\n- “I’m here.”\n- “You matter, even on messy days.”\n- “Rest is allowed.”\n\nTHE END (comfort found).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "robin_plan": {
+    "text": "Tiny support plan:\n\n1) One person/place\n2) One calming action\n3) One kind sentence\n\nTHE END (plan made).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "badger_intro": {
+    "text": "WEST — BADGER\n\nBadger peeks from a burrow near stones.\n“Boundaries are doors,” it says.\n\nPick one:",
+    "choices": [
+      { "text": "Boundary sentences", "next": "badger_sentences" },
+      { "text": "Guilt vs safety", "next": "badger_guilt" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "badger_sentences": {
+    "text": "Boundary sentences:\n\n- “I can’t do that today.”\n- “I need time to think.”\n- “No, thank you.”\n- “That doesn’t work for me.”\n\nTHE END (skill learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "badger_guilt": {
+    "text": "Badger says:\n\n“Guilt isn’t always proof you’re wrong.\nSometimes it’s proof you’re changing patterns.”\n\nTHE END (skill learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "deer_intro": {
+    "text": "NORTH — DEER\n\nDeer stands in tall grass.\n“Panic is an alarm,” it says.\n“Loud, not always accurate.”\n\nPick a tool:",
+    "choices": [
+      { "text": "Temperature reset", "next": "deer_temp" },
+      { "text": "Ride the wave", "next": "deer_wave" },
+      { "text": "Box breathing", "next": "breathing_box" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "deer_temp": {
+    "text": "Temperature reset:\n\n- splash cold water\n- hold something cool\n- step into fresh air\n\nTHE END (tool learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "deer_wave": {
+    "text": "Ride the wave:\n\nPanic rises, peaks, falls.\nSay: “This is a wave. I can float.”\n\nAnchor: feel feet on ground.\n\nTHE END (tool learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "hedgehog_intro": {
+    "text": "SOUTH — HEDGEHOG\n\nHedgehog is curled in a shady hedge.\n“Shutdown happens when it’s too much,” it whispers.\n\nPick one:",
+    "choices": [
+      { "text": "Gentle restart steps", "next": "hedgehog_restart" },
+      { "text": "Permission to go slow", "next": "hedgehog_slow" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "hedgehog_restart": {
+    "text": "Gentle restart:\n\n1) sip water\n2) change temperature (blanket / air)\n3) one tiny task (1 min)\n\nTHE END (tool learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "hedgehog_slow": {
+    "text": "Hedgehog says:\n\n“Slow is still moving.\nSmall is still progress.\nRest is still valid.”\n\nTHE END (comfort found).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "otter_intro": {
+    "text": "EAST — OTTER\n\nWater glittering in sunlight.\nOtter floats on its back.\n\n“Joy isn’t a reward,” it says.\n“It’s fuel.”\n\nPick one:",
+    "choices": [
+      { "text": "Two-minute nice thing", "next": "otter_nice" },
+      { "text": "Soothing senses", "next": "otter_senses" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "otter_nice": {
+    "text": "Two-minute kindness:\n\n- warm drink\n- favourite song\n- step into sunlight\n- stretch\n\nTHE END (joy fuel).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "otter_senses": {
+    "text": "Soothing senses:\n\nChoose one sense:\n- touch (soft fabric)\n- sound (gentle music)\n- smell (tea, soap)\n\nTHE END (soothing found).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "fox_intro": {
+    "text": "FOX TRAIL\n\nFox sits in a clearing with sharp eyes.\n“That inner critic tries to motivate with fear,” it says.\n\nPick one:",
+    "choices": [
+      { "text": "Name the critic voice", "next": "fox_name" },
+      { "text": "Rewrite the thought kindly", "next": "fox_rewrite" },
+      { "text": "Return to Map", "next": "Return to Map" }
+    ]
+  },
+
+  "fox_name": {
+    "text": "Give the critic a nickname.\nWhen it appears, say:\n“Oh, it’s YOU again.”\n\nDistance helps.\n\nTHE END (tool learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "fox_rewrite": {
+    "text": "Kind rewrite:\n\nCritic: “I’m failing.”\nRewrite: “I’m struggling and learning.”\n\nCritic: “I can’t cope.”\nRewrite: “I can cope in small chunks.”\n\nTHE END (tool learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "grounding_54321": {
+    "text": "Grounding: 5–4–3–2–1\n\nName:\n5 things you can see\n4 things you can feel\n3 things you can hear\n2 things you can smell\n1 thing you can taste\n\nTHE END (skill learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  },
+
+  "breathing_box": {
+    "text": "Box breathing (4–4–4–4)\n\nIn 4\nHold 4\nOut 4\nHold 4\n\nRepeat 3–5 rounds.\n\nTHE END (skill learned).",
+    "choices": [
+      { "text": "Return to Map", "next": "Return to Map" },
+      { "text": "Change day/weather", "next": "start" }
+    ]
+  }
+}

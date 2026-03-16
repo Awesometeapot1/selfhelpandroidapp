@@ -1,0 +1,36 @@
+package com.example.selfhelp
+
+data class Choice(
+    val text: String,
+    val next: String
+)
+
+data class Scene(
+    val text: String,
+    val choices: List<Choice>
+)
+
+data class MoodEntry(
+    val mood: String,
+    val timestamp: String,
+    val note: String = ""
+)
+
+data class TechniqueEntry(
+    val technique: String,
+    val timestamp: String
+)
+
+enum class AppScreen {
+    HOME,
+    STORY,
+    SETTINGS,
+    MOOD_TRACKER,
+    TECHNIQUE_LOG
+}
+
+enum class AppThemeOption(val label: String) {
+    SOFT_LAVENDER("Soft Lavender"),
+    FOREST_CALM("Forest Calm"),
+    DARK_NIGHT("Dark Night")
+}
