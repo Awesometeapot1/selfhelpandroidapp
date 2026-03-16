@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -36,6 +37,8 @@ fun HomeScreen(
     onStartJourney: () -> Unit,
     onMoodTracker: () -> Unit,
     onTechniqueLog: () -> Unit,
+    onDailyRoutine: () -> Unit,
+    onDashboard: () -> Unit,
     onSettings: () -> Unit
 ) {
     Scaffold(
@@ -62,7 +65,7 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "A gentle self-help space with interactive pathways, coping tools, mood tracking, and technique history.",
+                        text = "A gentle self-help space with interactive pathways, coping tools, mood tracking, routine support, and technique history.",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -76,6 +79,12 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            Button(onClick = onDailyRoutine, modifier = Modifier.fillMaxWidth()) {
+                Text("Daily Routine")
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Button(onClick = onMoodTracker, modifier = Modifier.fillMaxWidth()) {
                 Text("Mood Tracker")
             }
@@ -84,6 +93,12 @@ fun HomeScreen(
 
             Button(onClick = onTechniqueLog, modifier = Modifier.fillMaxWidth()) {
                 Text("Techniques Used")
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(onClick = onDashboard, modifier = Modifier.fillMaxWidth()) {
+                Text("Dashboard")
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -491,6 +506,300 @@ fun TechniqueLogScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DailyRoutineScreen(
+    tasks: List<DailyTask>,
+    checkedTaskIds: Set<String>,
+    onToggleTask: (String, Boolean) -> Unit,
+    onAddTask: (String, String) -> Unit,
+    onDeleteTask: (String) -> Unit,
+    onClearTodayChecks: () -> Unit,
+    onBackHome: () -> Unit
+) {
+    val titleState = remember { mutableStateOf("") }
+    val timeState = remember { mutableStateOf("") }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Daily Routine") },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors()
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Add Custom Task",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    TextField(
+                        value = titleState.value,
+                        onValueChange = { titleState.value = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Task name") }
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    TextField(
+                        value = timeState.value,
+                        onValueChange = { timeState.value = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Optional time (e.g. 08:00)") }
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Button(
+                        onClick = {
+                            val title = titleState.value.trim()
+                            val time = timeState.value.trim()
+                            if (title.isNotBlank()) {
+                                onAddTask(title, time)
+                                titleState.value = ""
+                                timeState.value = ""
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Add Task")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onClearTodayChecks,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Clear Today")
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Button(
+                    onClick = onBackHome,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Back to Home")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "Today’s Checklist",
+                style = MaterialTheme.typography.headlineSmall
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            tasks.forEach { task ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Checkbox(
+                            checked = task.id in checkedTaskIds,
+                            onCheckedChange = { checked ->
+                                onToggleTask(task.id, checked)
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = task.title,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+
+                            if (task.time.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = task.time,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = if (task.isBuiltIn) "Built-in task" else "Custom task",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
+                        if (!task.isBuiltIn) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Button(
+                                onClick = { onDeleteTask(task.id) }
+                            ) {
+                                Text("Delete")
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (tasks.isEmpty()) {
+                Text("No routine tasks yet.")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DashboardScreen(
+    moodEntries: List<MoodEntry>,
+    techniqueEntries: List<TechniqueEntry>,
+    tasks: List<DailyTask>,
+    checkedTaskIds: Set<String>,
+    onBackHome: () -> Unit
+) {
+    val moodCounts = moodEntries.groupingBy { it.mood }.eachCount().toList().sortedByDescending { it.second }
+    val techniqueCounts = techniqueEntries.groupingBy { it.technique }.eachCount().toList().sortedByDescending { it.second }
+
+    val latestMood = moodEntries.firstOrNull()?.mood ?: "No mood logged yet"
+    val latestTechnique = techniqueEntries.firstOrNull()?.technique ?: "No technique logged yet"
+
+    val mostCommonMood = moodCounts.firstOrNull()?.first ?: "No data"
+    val mostUsedTechnique = techniqueCounts.firstOrNull()?.first ?: "No data"
+
+    val completedCount = checkedTaskIds.count { checkedId -> tasks.any { it.id == checkedId } }
+    val totalTaskCount = tasks.size
+    val routinePercent = if (totalTaskCount > 0) {
+        (completedCount * 100) / totalTaskCount
+    } else {
+        0
+    }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Dashboard") },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors()
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Mood Overview", style = MaterialTheme.typography.headlineSmall)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text("Latest mood: $latestMood")
+                    Text("Total mood entries: ${moodEntries.size}")
+                    Text("Most common mood: $mostCommonMood")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Technique Overview", style = MaterialTheme.typography.headlineSmall)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text("Latest technique: $latestTechnique")
+                    Text("Total techniques used: ${techniqueEntries.size}")
+                    Text("Most used technique: $mostUsedTechnique")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Today’s Routine", style = MaterialTheme.typography.headlineSmall)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text("Completed: $completedCount / $totalTaskCount")
+                    Text("Completion: $routinePercent%")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text("Mood Breakdown", style = MaterialTheme.typography.headlineSmall)
+            Spacer(modifier = Modifier.height(10.dp))
+
+            if (moodCounts.isEmpty()) {
+                Text("No mood data yet.")
+            } else {
+                moodCounts.forEach { (mood, count) ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Text(text = mood, style = MaterialTheme.typography.bodyLarge)
+                            Text(text = "Count: $count", style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text("Technique Breakdown", style = MaterialTheme.typography.headlineSmall)
+            Spacer(modifier = Modifier.height(10.dp))
+
+            if (techniqueCounts.isEmpty()) {
+                Text("No technique data yet.")
+            } else {
+                techniqueCounts.forEach { (technique, count) ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Text(text = technique, style = MaterialTheme.typography.bodyLarge)
+                            Text(text = "Count: $count", style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = onBackHome,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Back to Home")
             }
         }
     }

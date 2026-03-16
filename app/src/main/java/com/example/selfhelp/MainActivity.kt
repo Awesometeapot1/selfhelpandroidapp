@@ -46,6 +46,8 @@ fun SelfHelpRoot() {
 
     var moodEntries by remember { mutableStateOf(loadMoodEntries(prefs)) }
     var techniqueEntries by remember { mutableStateOf(loadTechniqueEntries(prefs)) }
+    var dailyTasks by remember { mutableStateOf(loadDailyTasks(prefs)) }
+    var checkedTaskIds by remember { mutableStateOf(loadTodayTaskChecks(prefs)) }
 
     val colorScheme = when (selectedTheme) {
         AppThemeOption.SOFT_LAVENDER -> lightColorScheme(
@@ -93,6 +95,8 @@ fun SelfHelpRoot() {
                     },
                     onMoodTracker = { currentScreen = AppScreen.MOOD_TRACKER },
                     onTechniqueLog = { currentScreen = AppScreen.TECHNIQUE_LOG },
+                    onDailyRoutine = { currentScreen = AppScreen.DAILY_ROUTINE },
+                    onDashboard = { currentScreen = AppScreen.DASHBOARD },
                     onSettings = { currentScreen = AppScreen.SETTINGS }
                 )
 
@@ -153,7 +157,47 @@ fun SelfHelpRoot() {
                         clearTechniqueEntries(prefs)
                     },
                     onBackHome = { currentScreen = AppScreen.HOME }
+                )
 
+                AppScreen.DAILY_ROUTINE -> DailyRoutineScreen(
+                    tasks = dailyTasks,
+                    checkedTaskIds = checkedTaskIds,
+                    onToggleTask = { taskId, checked ->
+                        val updated = if (checked) {
+                            checkedTaskIds + taskId
+                        } else {
+                            checkedTaskIds - taskId
+                        }
+                        checkedTaskIds = updated
+                        saveTodayTaskChecks(prefs, updated)
+                    },
+                    onAddTask = { title, time ->
+                        val updated = dailyTasks + createCustomTask(title, time)
+                        dailyTasks = updated
+                        saveDailyTasks(prefs, updated)
+                    },
+                    onDeleteTask = { taskId ->
+                        val updatedTasks = dailyTasks.filterNot { it.id == taskId }
+                        dailyTasks = updatedTasks
+                        saveDailyTasks(prefs, updatedTasks)
+
+                        val updatedChecks = checkedTaskIds - taskId
+                        checkedTaskIds = updatedChecks
+                        saveTodayTaskChecks(prefs, updatedChecks)
+                    },
+                    onClearTodayChecks = {
+                        checkedTaskIds = emptySet()
+                        clearTodayTaskChecks(prefs)
+                    },
+                    onBackHome = { currentScreen = AppScreen.HOME }
+                )
+
+                AppScreen.DASHBOARD -> DashboardScreen(
+                    moodEntries = moodEntries,
+                    techniqueEntries = techniqueEntries,
+                    tasks = dailyTasks,
+                    checkedTaskIds = checkedTaskIds,
+                    onBackHome = { currentScreen = AppScreen.HOME }
                 )
             }
         }

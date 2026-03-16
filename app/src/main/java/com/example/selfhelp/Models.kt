@@ -21,12 +21,21 @@ data class TechniqueEntry(
     val timestamp: String
 )
 
+data class DailyTask(
+    val id: String,
+    val title: String,
+    val time: String = "",
+    val isBuiltIn: Boolean = false
+)
+
 enum class AppScreen {
     HOME,
     STORY,
     SETTINGS,
     MOOD_TRACKER,
-    TECHNIQUE_LOG
+    TECHNIQUE_LOG,
+    DAILY_ROUTINE,
+    DASHBOARD
 }
 
 enum class AppThemeOption(val label: String) {
