@@ -21,6 +21,11 @@ data class TechniqueEntry(
     val timestamp: String
 )
 
+data class NoteEntry(
+    val text: String,
+    val timestamp: String
+)
+
 data class DailyTask(
     val id: String,
     val title: String,
@@ -35,7 +40,9 @@ enum class AppScreen {
     MOOD_TRACKER,
     TECHNIQUE_LOG,
     DAILY_ROUTINE,
-    DASHBOARD
+    DASHBOARD,
+    BREATHING,
+    NOTES
 }
 
 enum class AppThemeOption(val label: String) {

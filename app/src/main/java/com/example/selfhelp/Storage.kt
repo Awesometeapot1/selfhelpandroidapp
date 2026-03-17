@@ -101,6 +101,39 @@ fun clearTechniqueEntries(prefs: SharedPreferences) {
     prefs.edit().putString("technique_entries", "[]").apply()
 }
 
+fun loadNoteEntries(prefs: SharedPreferences): List<NoteEntry> {
+    val raw = prefs.getString("note_entries", "[]") ?: "[]"
+    val jsonArray = JSONArray(raw)
+    val result = mutableListOf<NoteEntry>()
+
+    for (i in 0 until jsonArray.length()) {
+        val obj = jsonArray.getJSONObject(i)
+        result.add(
+            NoteEntry(
+                text = obj.getString("text"),
+                timestamp = obj.getString("timestamp")
+            )
+        )
+    }
+
+    return result
+}
+
+fun saveNoteEntries(prefs: SharedPreferences, entries: List<NoteEntry>) {
+    val jsonArray = JSONArray()
+    entries.forEach { entry ->
+        val obj = JSONObject()
+        obj.put("text", entry.text)
+        obj.put("timestamp", entry.timestamp)
+        jsonArray.put(obj)
+    }
+    prefs.edit().putString("note_entries", jsonArray.toString()).apply()
+}
+
+fun clearNoteEntries(prefs: SharedPreferences) {
+    prefs.edit().putString("note_entries", "[]").apply()
+}
+
 fun defaultDailyTasks(): List<DailyTask> {
     return listOf(
         DailyTask(id = "builtin_meds", title = "Take meds", time = "08:00", isBuiltIn = true),
