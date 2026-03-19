@@ -18,6 +18,20 @@ fun currentDateKey(): String {
     return formatter.format(Date())
 }
 
+fun loadLargeText(prefs: SharedPreferences): Boolean =
+    prefs.getBoolean("large_text", false)
+
+fun saveLargeText(prefs: SharedPreferences, value: Boolean) =
+    prefs.edit().putBoolean("large_text", value).apply()
+
+fun loadLanguage(prefs: SharedPreferences): AppLanguage {
+    val saved = prefs.getString("language", AppLanguage.ENGLISH.name) ?: AppLanguage.ENGLISH.name
+    return try { AppLanguage.valueOf(saved) } catch (_: Exception) { AppLanguage.ENGLISH }
+}
+
+fun saveLanguage(prefs: SharedPreferences, lang: AppLanguage) =
+    prefs.edit().putString("language", lang.name).apply()
+
 fun loadThemePreference(prefs: SharedPreferences): AppThemeOption {
     val saved = prefs.getString("selected_theme", AppThemeOption.SOFT_LAVENDER.name)
         ?: AppThemeOption.SOFT_LAVENDER.name

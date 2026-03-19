@@ -50,3 +50,10 @@ enum class AppThemeOption(val label: String) {
     FOREST_CALM("Forest Calm"),
     DARK_NIGHT("Dark Night")
 }
+
+enum class AppLanguage(val label: String, val code: String) {
+    ENGLISH("English",  "en"),
+    FRENCH( "Français", "fr"),
+    SPANISH("Español",  "es"),
+    WELSH(  "Cymraeg",  "cy")
+}

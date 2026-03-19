@@ -4,31 +4,219 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+// ── Story Map ─────────────────────────────────────────────────────────────────
+
+@Composable
+fun StoryMapView(
+    storyMap: Map<String, Scene>,
+    visitedSceneIds: List<String>,
+    currentSceneId: String,
+    modifier: Modifier = Modifier
+) {
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val onSurfaceVariantColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val density = LocalDensity.current
+    val scrollState = rememberScrollState()
+
+    val nodeRadius = 20.dp
+    val hSpacing = 76.dp
+    val vSpacing = 62.dp
+    val paddingH = 28.dp
+    val paddingV = 20.dp
+
+    val currentScene = storyMap[currentSceneId]
+    val futureChoices = currentScene?.choices ?: emptyList()
+    val nFuture = futureChoices.size
+    val nVisited = visitedSceneIds.size.coerceAtLeast(1)
+    val curIdx = nVisited - 1
+
+    // Distinct hue per choice so they're easy to distinguish
+    val choiceColors = remember(nFuture) {
+        (0 until nFuture).map { i ->
+            Color.hsv((i.toFloat() / nFuture.coerceAtLeast(1)) * 360f, 0.60f, 0.85f)
+        }
+    }
+
+    BoxWithConstraints(modifier = modifier) {
+        val containerW = maxWidth
+        // Keep current node centered; push right only when history is long
+        val centerX = maxOf(containerW / 2, paddingH + hSpacing * curIdx)
+        val futureSpread = if (nFuture <= 1) 0.dp else hSpacing * (nFuture - 1)
+        val futureEndX = centerX + futureSpread / 2
+
+        val mapWidth = maxOf(centerX + paddingH, futureEndX + paddingH)
+        val mapHeight = paddingV * 2 + nodeRadius * 2 +
+                if (nFuture > 0) vSpacing + nodeRadius * 2 + 8.dp else 0.dp
+
+        LaunchedEffect(nVisited, containerW) {
+            val scrollPx = with(density) {
+                (centerX - containerW / 2).coerceAtLeast(0.dp).roundToPx()
+            }
+            scrollState.animateScrollTo(scrollPx)
+        }
+
+        Box(modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState)) {
+            Canvas(modifier = Modifier.size(width = mapWidth, height = mapHeight)) {
+                val rPx = nodeRadius.toPx()
+                val hSpPx = hSpacing.toPx()
+                val vSpPx = vSpacing.toPx()
+                val padVPx = paddingV.toPx()
+                val curCX = centerX.toPx()
+                val row0Y = padVPx + rPx
+                val row1Y = row0Y + vSpPx
+
+                // Visited node centers: history grows left of curCX
+                val visitedCXs = (0 until nVisited).map { i -> curCX - (curIdx - i) * hSpPx }
+
+                val futureCXs: List<Float> = if (nFuture == 0) emptyList() else {
+                    val spread = (nFuture - 1) * hSpPx
+                    val startCX = curCX - spread / 2f
+                    (0 until nFuture).map { i -> startCX + i * hSpPx }
+                }
+
+                // History path lines
+                for (i in 0 until nVisited - 1) {
+                    drawLine(
+                        color = primaryColor.copy(alpha = 0.55f),
+                        start = Offset(visitedCXs[i] + rPx, row0Y),
+                        end = Offset(visitedCXs[i + 1] - rPx, row0Y),
+                        strokeWidth = 3.dp.toPx(),
+                        cap = StrokeCap.Round
+                    )
+                }
+
+                // Dashed color-coded lines to future nodes
+                futureCXs.forEachIndexed { idx, fcx ->
+                    val cc = choiceColors.getOrElse(idx) { primaryColor }
+                    val dx = fcx - curCX; val dy = row1Y - row0Y
+                    val len = kotlin.math.sqrt(dx * dx + dy * dy)
+                    if (len > 0f) {
+                        val ux = dx / len; val uy = dy / len
+                        var t = rPx + 4f
+                        while (t < len - rPx * 0.75f) {
+                            val tEnd = minOf(t + 8f, len - rPx * 0.75f)
+                            drawLine(
+                                color = cc.copy(alpha = 0.65f),
+                                start = Offset(curCX + ux * t, row0Y + uy * t),
+                                end = Offset(curCX + ux * tEnd, row0Y + uy * tEnd),
+                                strokeWidth = 2.dp.toPx(), cap = StrokeCap.Round
+                            )
+                            t += 14f
+                        }
+                    }
+                }
+
+                // Visited nodes
+                for (i in 0 until nVisited) {
+                    val cx = visitedCXs[i]
+                    val isCurrent = i == curIdx
+                    if (isCurrent) {
+                        drawCircle(color = primaryColor.copy(alpha = 0.18f), radius = rPx * 1.55f, center = Offset(cx, row0Y))
+                    }
+                    drawCircle(
+                        color = if (isCurrent) primaryColor else primaryColor.copy(alpha = 0.42f),
+                        radius = rPx, center = Offset(cx, row0Y)
+                    )
+                }
+
+                // Future choice nodes — color-coded
+                futureCXs.forEachIndexed { idx, fcx ->
+                    val cc = choiceColors.getOrElse(idx) { primaryColor }
+                    drawCircle(color = cc.copy(alpha = 0.22f), radius = rPx * 0.8f, center = Offset(fcx, row1Y))
+                    drawCircle(color = cc.copy(alpha = 0.75f), radius = rPx * 0.8f, center = Offset(fcx, row1Y), style = Stroke(width = 2.dp.toPx()))
+                }
+
+                // Text labels
+                val paint = android.graphics.Paint().apply {
+                    isAntiAlias = true
+                    textAlign = android.graphics.Paint.Align.CENTER
+                }
+                for (i in 0 until nVisited) {
+                    val cx = visitedCXs[i]
+                    val isCurrent = i == curIdx
+                    val label = visitedSceneIds[i].replace('_', ' ').take(7)
+                    paint.textSize = (if (isCurrent) 11.dp else 9.5.dp).toPx()
+                    paint.color = android.graphics.Color.WHITE
+                    paint.isFakeBoldText = isCurrent
+                    drawContext.canvas.nativeCanvas.drawText(label, cx, row0Y + paint.textSize * 0.38f, paint)
+                }
+                paint.isFakeBoldText = false
+                paint.textSize = 8.5.dp.toPx()
+                futureCXs.forEachIndexed { i, fcx ->
+                    val cc = choiceColors.getOrElse(i) { onSurfaceVariantColor }
+                    paint.color = cc.copy(alpha = 0.9f).toArgb()
+                    val label = futureChoices[i].text.take(11)
+                    drawContext.canvas.nativeCanvas.drawText(label, fcx, row1Y + paint.textSize * 0.38f, paint)
+                }
+            }
+        }
+    }
+}
+
 // ── Home ─────────────────────────────────────────────────────────────────────
+
+private data class HomeFeature(
+    val icon: ImageVector,
+    val label: String,
+    val description: String,
+    val screen: AppScreen
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(onNavigate: (AppScreen) -> Unit, onOpenMenu: () -> Unit) {
+    val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
+    val greeting = when {
+        hour < 12 -> "Good morning"
+        hour < 17 -> "Good afternoon"
+        else      -> "Good evening"
+    }
+
+    val features = listOf(
+        HomeFeature(Icons.Default.Favorite,    "Mood Check-in",  "How are you feeling right now?", AppScreen.MOOD_TRACKER),
+        HomeFeature(Icons.Default.Edit,        "Daily Routine",  "Your tasks and structure today",  AppScreen.DAILY_ROUTINE),
+        HomeFeature(Icons.Default.ArrowForward,"Breathing",      "Calm and ground your body",       AppScreen.BREATHING),
+        HomeFeature(Icons.Default.Star,        "Notes",          "A private space for thoughts",    AppScreen.NOTES),
+        HomeFeature(Icons.Default.Star,        "Progress",       "Look back at your journey",       AppScreen.DASHBOARD),
+        HomeFeature(Icons.Default.Settings,    "Settings",       "Themes and preferences",          AppScreen.SETTINGS),
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -48,37 +236,88 @@ fun HomeScreen(onNavigate: (AppScreen) -> Unit, onOpenMenu: () -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Welcome", style = MaterialTheme.typography.headlineSmall)
-                    Spacer(modifier = Modifier.height(8.dp))
+            // Hero / greeting card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
                     Text(
-                        "A gentle self-help space. Use the menu in the top corner or the buttons below to explore.",
-                        style = MaterialTheme.typography.bodyMedium
+                        greeting,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        "This is your gentle space. Take things at your own pace.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { onNavigate(AppScreen.STORY) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.ArrowForward, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Start the Guided Story")
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        "A choose-your-own-path through your feelings",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { onNavigate(AppScreen.STORY) }, modifier = Modifier.fillMaxWidth()) {
-                Text("Continue Your Journey")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { onNavigate(AppScreen.DAILY_ROUTINE) }, modifier = Modifier.weight(1f)) { Text("Routine") }
-                Button(onClick = { onNavigate(AppScreen.MOOD_TRACKER) }, modifier = Modifier.weight(1f)) { Text("Mood") }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { onNavigate(AppScreen.NOTES) }, modifier = Modifier.weight(1f)) { Text("Notes") }
-                Button(onClick = { onNavigate(AppScreen.DASHBOARD) }, modifier = Modifier.weight(1f)) { Text("Stats") }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { onNavigate(AppScreen.BREATHING) }, modifier = Modifier.fillMaxWidth()) {
-                Text("Breathing Exercise")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { onNavigate(AppScreen.SETTINGS) }, modifier = Modifier.fillMaxWidth()) {
-                Text("Settings")
+
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                "What would you like to do?",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            // 2-column feature grid
+            features.chunked(2).forEach { row ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    row.forEach { feature ->
+                        Card(
+                            onClick = { onNavigate(feature.screen) },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = feature.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    feature.label,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    feature.description,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                    if (row.size == 1) Spacer(modifier = Modifier.weight(1f))
+                }
             }
         }
     }
@@ -482,11 +721,13 @@ fun StoryScreen(onBack: () -> Unit, onOpenMenu: () -> Unit) {
 
     var currentSceneId by rememberSaveable { mutableStateOf("start") }
     val history = remember { mutableStateListOf<String>() }
+    val routeHistory = remember { mutableStateListOf("start") }
     var lastChoice by rememberSaveable { mutableStateOf("") }
     val currentScene = storyMap[currentSceneId]
 
     fun navigateTo(sceneId: String, choiceText: String) {
         history.add(currentSceneId)
+        routeHistory.add(choiceText)
         lastChoice = choiceText
         currentSceneId = sceneId
     }
@@ -494,6 +735,7 @@ fun StoryScreen(onBack: () -> Unit, onOpenMenu: () -> Unit) {
     fun goBack() {
         if (history.isNotEmpty()) {
             currentSceneId = history.removeLast()
+            if (routeHistory.size > 1) routeHistory.removeLast()
             lastChoice = ""
         }
     }
@@ -525,10 +767,26 @@ fun StoryScreen(onBack: () -> Unit, onOpenMenu: () -> Unit) {
             if (currentScene == null) {
                 Text("Scene not found.")
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = { currentSceneId = "start"; history.clear(); lastChoice = "" }) {
+                Button(onClick = {
+                    currentSceneId = "start"
+                    history.clear()
+                    routeHistory.clear()
+                    routeHistory.add("start")
+                    lastChoice = ""
+                }) {
                     Text("Restart Story")
                 }
                 return@Column
+            }
+
+            // Story map
+            Card(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                StoryMapView(
+                    storyMap = storyMap,
+                    visitedSceneIds = history.toList() + currentSceneId,
+                    currentSceneId = currentSceneId,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             // Show what choice led here
@@ -574,7 +832,13 @@ fun StoryScreen(onBack: () -> Unit, onOpenMenu: () -> Unit) {
                 } else {
                     Spacer(modifier = Modifier.weight(1f))
                 }
-                TextButton(onClick = { currentSceneId = "start"; history.clear(); lastChoice = "" }) {
+                TextButton(onClick = {
+                    currentSceneId = "start"
+                    history.clear()
+                    routeHistory.clear()
+                    routeHistory.add("start")
+                    lastChoice = ""
+                }) {
                     Text("Restart Story")
                 }
             }
@@ -589,6 +853,10 @@ fun StoryScreen(onBack: () -> Unit, onOpenMenu: () -> Unit) {
 fun SettingsScreen(
     selectedTheme: AppThemeOption,
     onThemeChange: (AppThemeOption) -> Unit,
+    largeText: Boolean,
+    onLargeTextChange: (Boolean) -> Unit,
+    selectedLanguage: AppLanguage,
+    onLanguageChange: (AppLanguage) -> Unit,
     onBack: () -> Unit,
     onOpenMenu: () -> Unit
 ) {
@@ -657,6 +925,77 @@ fun SettingsScreen(
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                        }
+                    }
+                }
+            }
+
+            // ── Accessibility ──────────────────────────────────────────────
+            Spacer(modifier = Modifier.height(24.dp))
+            Text("Accessibility", style = MaterialTheme.typography.headlineSmall)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                "Adjust the app to suit your needs.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Larger text", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            "Increases text size throughout the app",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(checked = largeText, onCheckedChange = onLargeTextChange)
+                }
+            }
+
+            // ── Language ───────────────────────────────────────────────────
+            Spacer(modifier = Modifier.height(24.dp))
+            Text("Language", style = MaterialTheme.typography.headlineSmall)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                "Changing language restarts the app.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            AppLanguage.entries.forEach { lang ->
+                val isSelected = selectedLanguage == lang
+                Card(
+                    onClick = { onLanguageChange(lang) },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (isSelected)
+                            MaterialTheme.colorScheme.primaryContainer
+                        else
+                            MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(selected = isSelected, onClick = { onLanguageChange(lang) })
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(lang.label, style = MaterialTheme.typography.bodyLarge)
+                            if (lang != AppLanguage.ENGLISH) {
+                                Text(
+                                    "Translation in progress",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
@@ -820,12 +1159,22 @@ fun BreathingScreen(onBack: () -> Unit, onOpenMenu: () -> Unit) {
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Breathing circle
+            // Breathing circle — tap to start/stop
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .clickable {
+                        if (isRunning) {
+                            isRunning = false
+                            phaseIndex = 0
+                            countdown = 0
+                        } else {
+                            phaseIndex = 0
+                            isRunning = true
+                        }
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
@@ -851,31 +1200,16 @@ fun BreathingScreen(onBack: () -> Unit, onOpenMenu: () -> Unit) {
                         )
                     } else {
                         Text(
-                            text = if (countdown == 0) "Ready" else "Paused",
+                            text = if (countdown == 0) "Tap to\nbegin" else "Tap to\nrestart",
                             style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = {
-                    if (isRunning) {
-                        isRunning = false
-                        phaseIndex = 0
-                        countdown = 0
-                    } else {
-                        phaseIndex = 0
-                        isRunning = true
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(if (isRunning) "Stop" else "Start")
-            }
 
             Spacer(modifier = Modifier.height(8.dp))
         }

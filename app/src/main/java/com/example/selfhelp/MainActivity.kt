@@ -2,6 +2,7 @@ package com.example.selfhelp
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,11 +15,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.example.selfhelp.ui.theme.SelfhelpTheme
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        val prefs = newBase.getSharedPreferences("selfhelp_prefs", Context.MODE_PRIVATE)
+        val langCode = prefs.getString("language", "en") ?: "en"
+        val locale = Locale(langCode)
+        Locale.setDefault(locale)
+        val config = Configuration(newBase.resources.configuration)
+        config.setLocale(locale)
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -33,16 +47,36 @@ fun SelfHelpApp() {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("selfhelp_prefs", Context.MODE_PRIVATE) }
     var selectedTheme by remember { mutableStateOf(loadThemePreference(prefs)) }
+    var largeText by remember { mutableStateOf(loadLargeText(prefs)) }
+    var selectedLanguage by remember { mutableStateOf(loadLanguage(prefs)) }
 
-    SelfhelpTheme(theme = selectedTheme) {
-        SelfHelpRoot(
-            prefs = prefs,
-            selectedTheme = selectedTheme,
-            onThemeChange = { theme ->
-                selectedTheme = theme
-                saveThemePreference(prefs, theme)
-            }
-        )
+    val baseDensity = LocalDensity.current
+    val density = if (largeText)
+        Density(baseDensity.density, fontScale = baseDensity.fontScale * 1.3f)
+    else baseDensity
+
+    CompositionLocalProvider(LocalDensity provides density) {
+        SelfhelpTheme(theme = selectedTheme) {
+            SelfHelpRoot(
+                prefs = prefs,
+                selectedTheme = selectedTheme,
+                onThemeChange = { theme ->
+                    selectedTheme = theme
+                    saveThemePreference(prefs, theme)
+                },
+                largeText = largeText,
+                onLargeTextChange = { value ->
+                    largeText = value
+                    saveLargeText(prefs, value)
+                },
+                selectedLanguage = selectedLanguage,
+                onLanguageChange = { lang ->
+                    selectedLanguage = lang
+                    saveLanguage(prefs, lang)
+                    (context as? android.app.Activity)?.recreate()
+                }
+            )
+        }
     }
 }
 
@@ -51,7 +85,11 @@ fun SelfHelpApp() {
 fun SelfHelpRoot(
     prefs: SharedPreferences,
     selectedTheme: AppThemeOption,
-    onThemeChange: (AppThemeOption) -> Unit
+    onThemeChange: (AppThemeOption) -> Unit,
+    largeText: Boolean,
+    onLargeTextChange: (Boolean) -> Unit,
+    selectedLanguage: AppLanguage,
+    onLanguageChange: (AppLanguage) -> Unit
 ) {
     var currentScreen by rememberSaveable { mutableStateOf(AppScreen.HOME) }
     var moodEntries by remember { mutableStateOf(loadMoodEntries(prefs)) }
@@ -203,6 +241,10 @@ fun SelfHelpRoot(
                     AppScreen.SETTINGS -> SettingsScreen(
                         selectedTheme = selectedTheme,
                         onThemeChange = onThemeChange,
+                        largeText = largeText,
+                        onLargeTextChange = onLargeTextChange,
+                        selectedLanguage = selectedLanguage,
+                        onLanguageChange = onLanguageChange,
                         onBack = { currentScreen = AppScreen.HOME },
                         onOpenMenu = openMenu
                     )
