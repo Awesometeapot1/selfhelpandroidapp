@@ -1,80 +1,58 @@
-```markdown
----
----
+# SelfHelp
 
-Each path leads to locations in the story world such as:
-
-- Memory rooms
-- Reflection prompts
-- Grounding exercises
-- Story characters
+A mental health and wellness Android app built with Kotlin and Jetpack Compose. Originally prototyped on a Raspberry Pi Pico, this app helps users track their emotional wellbeing through guided storytelling, mood tracking, breathing exercises, and daily routines.
 
 ---
----
-## Example Story World
 
-The current narrative setting includes locations such as:
+## Features
 
-- The Field
-- The Woods
-- Hare’s Burrow
-- Memory Rooms (Green / Amber / Red)
+### Guided Story
+An interactive choose-your-own-path narrative set in a metaphorical meadow with animal characters. Each choice leads through locations like the Field, the Woods, Hare's Burrow, and colour-coded Memory Rooms (Green / Amber / Red) that offer guidance on emotional states and when to seek help. A visual story map shows your progression and branching paths.
 
-These areas allow the user to explore thoughts and emotions through narrative choices.
+### Mood Tracker
+Log how you're feeling with a quick mood check-in (Good/okay, Low/heavy, Anxious/on edge, Numb/disconnected) plus an optional note. View your full mood history with timestamps.
 
----
----
-## Project Goals
+### Daily Routine
+A customisable daily checklist pre-loaded with wellness reminders (medication, meals, water, outdoor time, etc.). Add your own tasks, mark them complete, and reset at the start of each day.
 
-The main goals of this project are:
+### Breathing Exercises
+Three guided breathing techniques with an animated visual:
+- **Box Breathing** — 4-4-4-4 for nervous system regulation
+- **4-7-8 Breathing** — extended exhale for anxiety and sleep
+- **Deep Breathing** — gentle 4-6 pattern for beginners
 
-- Explore **interactive storytelling for wellbeing**
-- Convert a **hardware prototype into a mobile app**
-- Experiment with **branching narrative systems**
-- Create a simple and accessible reflection tool
+### Notes
+A private journaling space to write and save timestamped notes.
 
-This is currently an experimental personal project.
----
----
+### Progress Dashboard
+Summary stats including latest mood, most common mood, coping technique usage, and daily routine completion rate.
 
-## Technologies
+### Themes & Accessibility
+- Three colour themes: **Soft Lavender**, **Forest Calm**, **Dark Night**
+- Large text mode (scales all text by 1.3×)
+- Multi-language support: English, French, Spanish, Welsh (translations in progress)
 
-This Android project uses:
-
-- Android Studio
-- Kotlin / Java
-- Gradle
-- Git & GitHub
-
-The original prototype used:
-
-- Raspberry Pi Pico
-- MicroPython
-- Touchscreen interface
-- Custom story data system
----
 ---
 
-## Future Ideas
+## Tech Stack
 
-Planned improvements include:
+- **Language**: Kotlin
+- **UI**: Jetpack Compose + Material Design 3
+- **Persistence**: SharedPreferences (JSON-serialised data)
+- **Min SDK**: 23 / Target SDK: 36
 
-- Expanded branching story paths
-- Daily check-in system
-- Persistent story progress
-- Calm UI themes
-- Audio narration
-- Optional grounding exercises
 ---
+
+## Background
+
+This project started as a hardware prototype using a Raspberry Pi Pico, MicroPython, and a touchscreen interface. The Android app recreates and expands on that original concept.
+
 ---
 
 ## Author
 
-GitHub: https://github.com/Awesometeapot1
----
----
+GitHub: [Awesometeapot1](https://github.com/Awesometeapot1)
 
 ## License
 
-This project is licensed under the GPL-2.0 License.
-```
+GPL-2.0
